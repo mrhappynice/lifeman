@@ -1,0 +1,265 @@
+:root {
+    --bg-main: #0f1014;
+    --bg-card: #1b1d24;
+    --accent: #1c2d6f; /* Modern Purple */
+    --accent-glow: rgba(124, 77, 255, 0.3);
+    --text-primary: #c9d4e3;
+    --text-secondary: #8f9bb3;
+    --success: #00e676;
+    --warning: #ffab00;
+    --danger: #ff1744;
+    --radius: 12px;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+
+.container { max-width: 1200px; margin: 0 auto; }
+
+/* Header & Search */
+/* =========================================
+   HEADER & FILTER STYLES (Responsive & Wrapping)
+   ========================================= */
+
+header {
+    display: flex;
+    flex-direction: column; /* Default: Stack vertically for mobile */
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+/* Desktop: Side-by-side layout */
+@media (min-width: 768px) {
+    header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-start; /* Aligns to top */
+    }
+
+    /* Title & Tags Container */
+    header > div:first-child {
+        flex: 1; /* Takes up available space */
+        margin-right: 30px; 
+    }
+
+    /* Button Container */
+    header > div:last-child {
+        flex-shrink: 0; /* Prevents buttons from squishing */
+        margin-top: 5px; /* Aligns nicely with the H1 */
+    }
+}
+
+h1 {
+    font-weight: 700;
+    background: linear-gradient(to right, #fff, #aaa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0 0 15px 0; /* Add space below title for the chips */
+    font-size: 2rem;
+    line-height: 1.2;
+}
+
+/* Filter Bar - Wrapping List */
+.filter-bar {
+    display: flex;
+    flex-wrap: wrap; /* KEY CHANGE: Wraps tags to next line */
+    gap: 8px;        /* Consistent spacing */
+    width: 100%;
+}
+
+.chip {
+    padding: 6px 14px;
+    background: var(--bg-card);
+    border: 1px solid #333;
+    border-radius: 50px; /* Fully rounded pill shape */
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.chip:hover {
+    border-color: var(--accent);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.chip.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+    box-shadow: 0 0 12px var(--accent-glow);
+}
+
+/* Card Grid */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    padding: 20px;
+    border: 1px solid #2c303a;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+.card:hover { transform: translateY(-3px); border-color: #444; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+
+/* Card Internals */
+.card-top { display: flex; justify-content: space-between; margin-bottom: 10px; }
+.freq-badge { 
+    font-size: 0.7rem; text-transform: uppercase; font-weight: bold; padding: 4px 8px; border-radius: 4px; letter-spacing: 0.5px;
+}
+.freq-Daily { background: rgba(0, 230, 118, 0.15); color: var(--success); }
+.freq-Weekly { background: rgba(255, 171, 0, 0.15); color: var(--warning); }
+.freq-Monthly { background: rgba(41, 121, 255, 0.15); color: #2979ff; }
+.freq-One-Time { background: #333; color: #aaa; }
+
+.card h3 { margin: 0 0 10px 0; font-size: 1.2rem; }
+.card p { color: var(--text-secondary); line-height: 1.5; font-size: 0.95rem; flex-grow: 1; white-space: pre-wrap; }
+
+/* The Hash Tag Style */
+.hashtag {
+    color: #c9d4e3;
+    background: rgba(124, 77, 255, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.hashtag:hover { text-decoration: underline; }
+
+.card-actions { margin-top: 15px; border-top: 1px solid #2c303a; padding-top: 15px; display: flex; gap: 10px; justify-content: flex-end; }
+.btn-icon { background: none; border: none; cursor: pointer; color: #666; font-size: 0.9rem; }
+.btn-icon:hover { color: #fff; }
+
+/* Wizard Modal */
+.modal {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+}
+.modal.open { opacity: 1; pointer-events: all; }
+.wizard-box {
+    background: #1b1d24; width: 500px; max-width: 90%; border-radius: 20px;
+    padding: 30px; border: 1px solid #333; box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+}
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; color: var(--text-secondary); margin-bottom: 8px; font-size: 0.9rem; }
+.form-group input, .form-group textarea, .form-group select {
+    width: 100%; padding: 12px; background: #0f1014; border: 1px solid #333;
+    color: white; border-radius: 8px; font-family: inherit; font-size: 1rem;
+    box-sizing: border-box;
+}
+.form-group input:focus { border-color: var(--accent); outline: none; }
+
+.btn-primary { background: var(--accent); color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+.btn-primary:hover { background: var(--bg-card); }
+.hidden { display: none; }
+
+.view-toggle {
+    background: #1b1d24;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 4px;
+    display: flex;
+}
+.toggle-btn {
+    background: transparent;
+    border: none;
+    color: #888;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 6px;
+    font-weight: 600;
+}
+.toggle-btn.active { background: #333; color: white; }
+
+/* Calendar Container */
+.calendar-container {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    padding: 20px;
+    border: 1px solid #333;
+}
+.cal-header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+}
+.cal-header h2 { margin: 0; color: var(--accent); }
+.cal-header button {
+    background: #333; border: none; color: white; width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+}
+.cal-header button:hover { background: var(--accent); }
+
+/* Calendar Grid */
+.cal-grid-header, .cal-grid-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background: #333; /* Border color */
+    border: 1px solid #333;
+}
+.cal-grid-header div {
+    background: #1b1d24;
+    padding: 10px;
+    text-align: center;
+    color: var(--text-secondary);
+    font-weight: bold;
+}
+.cal-day {
+    background: #15171c;
+    min-height: 120px;
+    padding: 5px;
+    position: relative;
+    cursor: pointer;
+}
+.cal-day:hover { background: #1f2229; }
+.cal-day.today { background: rgba(124, 77, 255, 0.05); }
+.day-number {
+    position: absolute; top: 5px; right: 8px; color: #666; font-size: 0.9rem;
+}
+
+/* Calendar Events */
+.cal-event {
+    font-size: 0.75rem;
+    margin-top: 2px;
+    padding: 3px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
+.cal-event.type-one-time { background: var(--accent); color: white; }
+.cal-event.type-daily { background: rgba(0, 230, 118, 0.2); color: var(--success); border-left: 2px solid var(--success); }
+.cal-event.type-weekly { background: rgba(255, 171, 0, 0.2); color: var(--warning); border-left: 2px solid var(--warning); }
+.cal-event.type-monthly { background: rgba(41, 121, 255, 0.2); color: #2979ff; border-left: 2px solid #2979ff; }
+.cal-event.type-yearly { 
+    background: rgba(255, 64, 129, 0.2); 
+    color: #ff4081; 
+    border-left: 2px solid #ff4081; 
+}
+
+.cal-event::before {
+    content: '•';
+    margin-right: 4px;
+    font-weight: bold;
+    color: rgba(255,255,255,0.7);
+}
+
+/* Specific colors for categories if you want them */
+.cal-event[onclick*="brain-dump"] { border-right: 3px solid #e040fb; }
+.cal-event[onclick*="project"]    { border-right: 3px solid #00bcd4; }
+.cal-event[onclick*="chore"]      { border-right: 3px solid #ffab00; }

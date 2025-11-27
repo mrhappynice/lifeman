@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>life-manager</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <header>
+        <div>
+            <h1>Life Manager</h1>
+            <div id="tag-filter-bar" class="filter-bar">
+                <!-- Buttons injected via JS -->
+            </div>
+        </div>
+        <div style="display:flex; gap:10px;">
+            <div class="view-toggle">
+                <button id="view-list" class="toggle-btn active" onclick="switchView('list')">List</button>
+                <button id="view-cal" class="toggle-btn" onclick="switchView('calendar')">Calendar</button>
+            </div>
+            <button onclick="openNew()" class="btn-primary" style="font-size:1.1rem;">+ New Entry</button>
+        </div>
+    </header>
+
+        <div id="grid" class="grid"></div>
+        
+        <div id="calendar-view" class="calendar-container hidden">
+    <div class="cal-header">
+        <button onclick="changeMonth(-1)">&#8592;</button>
+        <h2 id="cal-month-name">Month Year</h2>
+        <button onclick="changeMonth(1)">&#8594;</button>
+    </div>
+    <div class="cal-grid-header">
+        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+    </div>
+    <div id="cal-days" class="cal-grid-days">
+        <!-- Javascript will inject days here -->
+    </div>
+</div>
+        
+    </div>
+
+    <!-- Wizard Modal -->
+    <div id="modal" class="modal">
+        <div class="wizard-box">
+            <button onclick="closeModal()" style="float:right; background:none; border:none; color:#666; cursor:pointer; font-size:1.2rem;">&times;</button>
+            <div id="wizard-body">
+                <!-- Injected via JS -->
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-top:30px;">
+                <button id="prev-btn" class="hidden" onclick="moveWizard(-1)" style="background:none; border:none; color:#888; cursor:pointer;">Back</button>
+                <button id="next-btn" class="hidden btn-primary" onclick="moveWizard(1)">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
