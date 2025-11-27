@@ -1,5 +1,5 @@
 # Life Manager
-Categorize and manager your life, with calendar.
+Categorize and manage your life, with calendar.
 
 
 cargo build --release
