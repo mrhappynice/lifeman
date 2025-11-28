@@ -1,1 +1,1 @@
-cp target/release/life-manager .
+cp target/release/lifeman .
