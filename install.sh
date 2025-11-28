@@ -4,8 +4,8 @@ set -Eeuo pipefail
 
 BINARY_URL="https://github.com/mrhappynice/lifeman/releases/download/v0.2/lifeman"
 JSON_URL="https://github.com/mrhappynice/lifeman/raw/refs/heads/main/data.json"
-INSTALL_DIR="bplus-launcher"
-BINARY_NAME="bplus-launcher"
+INSTALL_DIR="lifeman"
+BINARY_NAME="lifeman"
 JSON_NAME="data.json"
 INDEX_NAME="index.html"
 SCRIPT_NAME="script.js"
