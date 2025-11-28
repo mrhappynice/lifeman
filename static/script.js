@@ -173,7 +173,10 @@ let editingId = null;
 let currentStep = 0;
 let currentCatKey = null;
 let wizardData = {};
-let activeTag = null;
+
+// NEW: OS-Site Style State
+let activeTags = new Set(); 
+let searchQuery = ""; 
 
 // --- Elements ---
 const grid = document.getElementById("grid");
@@ -181,73 +184,113 @@ const modal = document.getElementById("modal");
 const modalBody = document.getElementById("wizard-body");
 const prevBtn = document.getElementById("prev-btn");
 const nextBtn = document.getElementById("next-btn");
+const searchInput = document.getElementById("search-input"); // NEW
 
-document.addEventListener("DOMContentLoaded", fetchEntries);
+document.addEventListener("DOMContentLoaded", () => {
+    fetchEntries();
+    
+    // NEW: Search Listener
+    searchInput.addEventListener("input", (e) => {
+        searchQuery = e.target.value.trim().toLowerCase();
+        refreshViews();
+    });
+});
 
 // --- Core Functions ---
 
 async function fetchEntries() {
   const res = await fetch("/api/entries");
   allEntries = await res.json();
-  renderTagBar(); // <--- NEW
-  renderGrid(); // <--- UPDATED: Removed argument, reads global state
-  renderCalendar(); // <--- NEW: Ensure calendar updates on load too
+  renderTagBar();
+  refreshViews();
 }
 
-// --- Tag System ---
+function refreshViews() {
+    if (currentView === "list") renderGrid();
+    else renderCalendar();
+}
+
+// --- Tag System (Ported from OS Site) ---
 
 function renderTagBar() {
   const container = document.getElementById("tag-filter-bar");
   const tags = new Set();
 
-  // 1. Collect all tags from Tags Array AND Description
+  // 1. Collect all tags
   allEntries.forEach((entry) => {
     if (entry.tags) entry.tags.forEach((t) => tags.add(t));
-
-    // Also Regex scan the description for #tags
     const matches = entry.description ? entry.description.match(/#\w+/g) : [];
-    if (matches) matches.forEach((m) => tags.add(m.substring(1))); // remove #
+    if (matches) matches.forEach((m) => tags.add(m.substring(1)));
   });
 
   // 2. Build HTML
-  let html = `<button class="chip ${activeTag === null ? "active" : ""}" onclick="applyTagFilter(null)">All</button>`;
+  container.innerHTML = "";
 
-  Array.from(tags)
-    .sort()
-    .forEach((tag) => {
-      const isActive = activeTag === tag ? "active" : "";
-      html += `<button class="chip ${isActive}" onclick="applyTagFilter('${tag}')">#${tag}</button>`;
-    });
+  // "All" Button (Clears filters)
+  const allBtn = document.createElement("button");
+  allBtn.className = `chip ${activeTags.size === 0 ? "active" : ""}`;
+  allBtn.textContent = "All";
+  allBtn.onclick = () => {
+      activeTags.clear();
+      renderTagBar();
+      refreshViews();
+  };
+  container.appendChild(allBtn);
 
-  container.innerHTML = html;
+  // Tag Buttons
+  Array.from(tags).sort().forEach((tag) => {
+      const btn = document.createElement("button");
+      btn.className = `chip ${activeTags.has(tag) ? "active" : ""}`;
+      btn.textContent = `#${tag}`;
+      btn.onclick = () => toggleTag(tag);
+      container.appendChild(btn);
+  });
 }
 
-function applyTagFilter(tag) {
-  activeTag = tag;
-  renderTagBar(); // Re-render chips to update 'active' class styling
-
-  if (currentView === "list") renderGrid();
-  else renderCalendar();
+function toggleTag(tag) {
+    // Multi-select logic from OS Site
+    if (activeTags.has(tag)) {
+        activeTags.delete(tag);
+    } else {
+        activeTags.add(tag);
+    }
+    renderTagBar(); // Re-render to update active classes
+    refreshViews();
 }
 
-// Helper to check if an entry matches the active tag
+// --- Filter Logic (The Brains) ---
+
 function entryMatchesFilter(entry) {
-  if (!activeTag) return true;
+  // 1. Text Search Check (Name, Desc, Details)
+  const textMatch = !searchQuery || 
+    entry.title.toLowerCase().includes(searchQuery) || 
+    (entry.description && entry.description.toLowerCase().includes(searchQuery));
 
-  const tag = activeTag;
-  const inTags = entry.tags && entry.tags.includes(tag);
-  const inDesc = entry.description && entry.description.includes("#" + tag);
+  if (!textMatch) return false;
 
-  return inTags || inDesc;
+  // 2. Tag Check (Multi-select OR logic)
+  // If no tags selected, show everything. If tags selected, entry must have at least one.
+  if (activeTags.size === 0) return true;
+
+  // Collect entry tags
+  const entryTags = new Set(entry.tags || []);
+  const descTags = entry.description ? entry.description.match(/#\w+/g) : [];
+  if (descTags) descTags.forEach(t => entryTags.add(t.substring(1)));
+
+  // Check intersection
+  for (let tag of activeTags) {
+      if (entryTags.has(tag)) return true;
+  }
+
+  return false;
 }
 
+// Update the renderGrid to use this new logic
 function renderGrid() {
   grid.innerHTML = "";
 
-  // FILTER: Only show matching entries
-  const visibleEntries = allEntries.filter((entry) =>
-    entryMatchesFilter(entry),
-  );
+  // Use the shared filter function
+  const visibleEntries = allEntries.filter(entry => entryMatchesFilter(entry));
 
   if (visibleEntries.length === 0) {
     grid.innerHTML = `<div style="text-align:center; grid-column:1/-1; color:#555; margin-top:50px;">
@@ -561,32 +604,41 @@ function renderCalendar() {
   }
 
   // 2. Add Days
-  const today = new Date();
+ const today = new Date();
   for (let i = 1; i <= daysInMonth; i++) {
     const dayDiv = document.createElement("div");
     dayDiv.className = "cal-day";
-    if (
-      i === today.getDate() &&
-      month === today.getMonth() &&
-      year === today.getFullYear()
-    ) {
+    
+    // Highlight Today
+    if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
       dayDiv.classList.add("today");
     }
 
     dayDiv.innerHTML = `<span class="day-number">${i}</span>`;
 
-    // Find Events for this day
+    // Find Events
     const dayEvents = getEventsForDay(year, month, i);
+    
+    // Render Event Indicators (Bars on desktop, Dots on mobile via CSS)
     dayEvents.forEach((evt) => {
       const el = document.createElement("div");
       el.className = `cal-event type-${evt.type}`;
-      el.innerText = evt.title;
+      el.innerText = evt.title; // CSS hides this on mobile
+      
+      // Desktop Click: Open Edit directly
       el.onclick = (e) => {
-        e.stopPropagation();
-        openEdit(evt.id);
+        if(window.innerWidth > 768) {
+            e.stopPropagation();
+            openEdit(evt.id);
+        }
       };
       dayDiv.appendChild(el);
     });
+
+    // Mobile Click: Select the day and show details below
+    dayDiv.onclick = () => {
+        selectMobileDay(dayDiv, dayEvents, i, year, month);
+    };
 
     daysContainer.appendChild(dayDiv);
   }
@@ -692,4 +744,51 @@ function getEventsForDay(year, month, day) {
   });
 
   return events;
+}
+
+
+function selectMobileDay(el, events, day, year, month) {
+    // 1. UI Selection Highlighting
+    document.querySelectorAll('.cal-day').forEach(d => d.classList.remove('selected'));
+    el.classList.add('selected');
+
+    // 2. Show the Container
+    const detailBox = document.getElementById('mobile-day-details');
+    const titleEl = document.getElementById('mobile-selected-date-title');
+    const listEl = document.getElementById('mobile-event-list');
+    
+    detailBox.classList.remove('hidden');
+    
+    // 3. Format Date Title
+    const dateObj = new Date(year, month, day);
+    titleEl.innerText = dateObj.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+
+    // 4. Render List
+    if (events.length === 0) {
+        listEl.innerHTML = `<div style="color:#666; font-style:italic;">No events planned.</div>`;
+        return;
+    }
+
+    listEl.innerHTML = events.map(evt => `
+        <div class="mobile-event-card" 
+             style="border-left-color: ${getCategoryColor(evt.type)}"
+             onclick="openEdit('${evt.id}')">
+            <span>${evt.title}</span>
+            <span style="font-size:0.8rem; color:#888;">${evt.category}</span>
+        </div>
+    `).join('');
+    
+    // Scroll to details on very small screens
+    if(window.innerWidth < 600) {
+        detailBox.scrollIntoView({ behavior: "smooth" });
+    }
+}
+
+// Helper for colors
+function getCategoryColor(type) {
+    if(type === 'daily') return 'var(--success)';
+    if(type === 'weekly') return 'var(--warning)';
+    if(type === 'monthly') return '#2979ff';
+    if(type === 'yearly') return '#ff4081';
+    return 'var(--accent)';
 }

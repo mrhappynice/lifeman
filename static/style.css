@@ -2,7 +2,7 @@
     --bg-main: #0f1014;
     --bg-card: #1b1d24;
     --accent: #1c2d6f; /* Modern Purple */
-    --accent-glow: rgba(124, 77, 255, 0.3);
+    --accent-glow: rgb(81, 117, 255);
     --text-primary: #c9d4e3;
     --text-secondary: #8f9bb3;
     --success: #00e676;
@@ -263,3 +263,98 @@ h1 {
 .cal-event[onclick*="brain-dump"] { border-right: 3px solid #e040fb; }
 .cal-event[onclick*="project"]    { border-right: 3px solid #00bcd4; }
 .cal-event[onclick*="chore"]      { border-right: 3px solid #ffab00; }
+
+#search-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+
+@media (max-width: 768px) {
+    
+    /* 1. Header controls: Make them smaller */
+    .cal-header h2 { font-size: 1.1rem; }
+    .cal-header button { width: 32px; height: 32px; }
+
+    /* 2. The Grid: Reduce height and font size */
+    .cal-day {
+        min-height: 50px; /* Much shorter than desktop */
+        font-size: 0.8rem;
+        padding: 2px;
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Center the dots */
+    }
+
+    /* 3. The Events: Transform text bars into DOTS */
+    .cal-event {
+        font-size: 0;       /* Hide text */
+        width: 6px;         /* Dot width */
+        height: 6px;        /* Dot height */
+        padding: 0;         
+        border-radius: 50%; /* Circle */
+        border: none !important; /* Remove the left-border styling */
+        margin: 1px;
+        display: inline-block;
+    }
+
+    /* Keep colors but apply to background */
+    .cal-event.type-one-time { background: var(--accent); }
+    .cal-event.type-daily    { background: var(--success); }
+    .cal-event.type-weekly   { background: var(--warning); }
+    .cal-event.type-monthly  { background: #2979ff; }
+    .cal-event.type-yearly   { background: #ff4081; }
+
+    /* 4. Container for the Dots */
+    /* This forces dots to wrap if there are many */
+    .cal-day {
+        display: flex;
+        flex-flow: row wrap; 
+        justify-content: center;
+        align-content: flex-start;
+        gap: 2px;
+        padding-top: 20px; /* Make room for the number */
+    }
+    
+    .day-number {
+        position: absolute;
+        top: 2px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.75rem;
+    }
+
+    /* 5. Selected State for Mobile */
+    .cal-day.selected {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--accent);
+    }
+}
+
+/* Styles for the Details Box below calendar (Visible on mobile) */
+.mobile-day-details {
+    margin-top: 20px;
+    border-top: 1px solid #333;
+    padding-top: 15px;
+    animation: fadeIn 0.3s ease;
+}
+
+.mobile-day-details h3 {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+}
+
+/* Reuse card styles for the mobile list items */
+.mobile-event-card {
+    background: #15171c;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border-left: 4px solid transparent;
+    cursor: pointer;
+    display: flex; 
+    justify-content: space-between;
+    align-items: center;
+}

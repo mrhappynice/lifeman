@@ -9,10 +9,14 @@
 </head>
 <body>
 <div class="container">
-    <header>
-        <div>
-            <h1>Life Manager</h1>
-            <div id="tag-filter-bar" class="filter-bar">
+<header>
+    <div style="flex: 1; margin-right: 30px;">
+        <h1>Life Manager</h1>
+        <!-- NEW: Search Input similar to OS Site -->
+        <input type="search" id="search-input" placeholder="Search entries..." autocomplete="off" 
+               style="width: 100%; max-width: 400px; padding: 10px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #333; background: #0f1014; color: white;">
+        
+        <div id="tag-filter-bar" class="filter-bar">
                 <!-- Buttons injected via JS -->
             </div>
         </div>
@@ -38,6 +42,10 @@
     </div>
     <div id="cal-days" class="cal-grid-days">
         <!-- Javascript will inject days here -->
+    </div>
+        <div id="mobile-day-details" class="mobile-day-details hidden">
+        <h3 id="mobile-selected-date-title">Select a day...</h3>
+        <div id="mobile-event-list"></div>
     </div>
 </div>
         
