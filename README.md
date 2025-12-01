@@ -1,5 +1,5 @@
 # Life Manager
-Categorize and manage your life, with calendar and lexical search.
+Categorize and manage your life, with calendar and instant lexical search of titles, tags, and the description content of each card.
 
 Select a category, enter info, track info/tasks/projects, timely calendar included.
 
