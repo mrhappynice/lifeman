@@ -3,7 +3,8 @@ Categorize and manage your life, with calendar and instant lexical search of tit
 
 Select a category, enter info, track info/tasks/projects, timely calendar included.
 
-Built web only version for Netlify deploy and hosting with Nginx etc. try it out: https://lifeman.mhn.lol
+Built web only version for Netlify deploy and hosting with Nginx etc. try it out: https://lifeman.mhn.lol  
+Supports backing up and loading data to/from device. 
 
 ## Quick Start🏁
 glibc 2.35+ (Ubuntu 22+) binary ready
