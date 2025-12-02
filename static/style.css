@@ -1,7 +1,7 @@
 :root {
     --bg-main: #0f1014;
     --bg-card: #1b1d24;
-    --accent: #1c2d6f; /* Modern Purple */
+    --accent: #0064ff; 
     --accent-glow: rgb(81, 117, 255);
     --text-primary: #c9d4e3;
     --text-secondary: #8f9bb3;
@@ -21,7 +21,6 @@ body {
 
 .container { max-width: 1200px; margin: 0 auto; }
 
-/* Header & Search */
 /* =========================================
    HEADER & FILTER STYLES (Responsive & Wrapping)
    ========================================= */
