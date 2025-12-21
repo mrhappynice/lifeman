@@ -1,7 +1,7 @@
 {
-  "name": "Life Manager",
-  "short_name": "LifeMgr",
-  "description": "life organizer with calendar, tags, and backups.",
+  "name": "Bookmarklet Manager",
+  "short_name": "JS Marks",
+  "description": "Organize and edit your bookmarklets offline.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
